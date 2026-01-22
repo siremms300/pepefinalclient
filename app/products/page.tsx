@@ -52,7 +52,7 @@ export default function ProductsPage() {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
       
-      <main className="flex-grow py-8">
+      <main className="grow py-8">
         <div className="container mx-auto px-4">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Our Full Menu</h1>
