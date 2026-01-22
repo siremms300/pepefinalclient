@@ -1,4 +1,4 @@
-// components/products/ProductDetails.tsx
+// components/products/ProductDetails.tsx (FIXED VERSION)
 'use client'
 
 import { useState } from 'react'
@@ -71,44 +71,48 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   const { addToCart } = useCart()
   const { showToast } = useToast()
 
-  // Helper function to safely access properties
-  const getSafeValue = <T,>(value: T | undefined | null, defaultValue: T): T => {
-    return value !== undefined && value !== null ? value : defaultValue
-  }
-
-  // Calculate discount percentage
+  // Calculate discount percentage - FIXED: properly handle undefined oldPrice
   const hasDiscount = product.oldPrice && product.oldPrice > product.price
   const discountPercentage = hasDiscount 
-    ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
-    : (product.discount || 0)
+  ? Math.round(((product.oldPrice! - product.price) / product.oldPrice!) * 100)
+  : (product.discount || 0)
 
   // Get product images for gallery
-  const productImages = getSafeValue(product.images, []).map(img => img.url)
+  const productImages = product.images?.map(img => img.url) || []
   const allImages = productImages.length > 0 ? productImages : ['/images/placeholder-food.jpg']
 
-  const handleAddToCart = () => {
-    // Check if product is in stock
-    if (product.stock === 0) {
-      showToast(`${product.name} is out of stock!`, 'error')
-      return
-    }
-    
-    // Check if quantity meets MOQ
-    if (quantity < (product.moq || 1)) {
-      showToast(`Minimum order quantity is ${product.moq || 1}`, 'error')
-      return
-    }
-    
-    addToCart({
-      id: product._id,
-      name: product.name,
-      price: product.price,
-      image: allImages[0],
-      quantity: quantity
-    })
-    
-    showToast(`${product.name} added to cart!`, 'success')
+ // FIXED: Remove quantity from the object passed to addToCart
+const handleAddToCart = () => {
+  // Check if product is in stock
+  if (product.stock === 0) {
+    showToast(`${product.name} is out of stock!`)
+    return
   }
+  
+  // Check if quantity meets MOQ
+  if (quantity < (product.moq || 1)) {
+    showToast(`Minimum order quantity is ${product.moq || 1}`)
+    return
+  }
+  
+  // FIXED: Create cart item without quantity field since it's handled by CartContext
+  addToCart({
+    id: product._id,
+    name: product.name,
+    price: product.price,
+    image: allImages[0],
+    // Remove quantity from here - the CartContext will handle it
+    // oldPrice: product.oldPrice,
+    // category: product.category?.name || 'Uncategorized',
+    // brand: product.brand || '',
+    // stock: product.stock,
+    // moq: product.moq || 1
+  })
+  
+  // If you need to set a specific quantity (not just 1), you'll need to update it after adding
+  // This depends on your CartContext implementation
+  showToast(`${product.name} added to cart!`)
+}
 
   const handleBuyNow = () => {
     handleAddToCart()
@@ -123,7 +127,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
       })
     } else {
       navigator.clipboard.writeText(window.location.href)
-      showToast('Link copied to clipboard!', 'success')
+      showToast('Link copied to clipboard!')
     }
   }
 
@@ -362,10 +366,10 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 ₦{product.price.toLocaleString()}
               </div>
               
-              {hasDiscount && product.oldPrice && (
+              {hasDiscount && (
                 <>
                   <div className="text-2xl font-bold text-gray-400 line-through">
-                    ₦{product.oldPrice.toLocaleString()}
+                    ₦{(product.oldPrice || 0).toLocaleString()}
                   </div>
                   <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-2 rounded-full font-bold text-lg">
                     Save {discountPercentage}%
@@ -594,6 +598,675 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     </div>
   )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // components/products/ProductDetails.tsx
+// 'use client'
+
+// import { useState } from 'react'
+// import { 
+//   StarIcon, 
+//   ClockIcon, 
+//   HeartIcon, 
+//   ShoppingCartIcon,
+//   ArrowLeftIcon,
+//   ShareIcon,
+//   TagIcon,
+//   CheckCircleIcon,
+//   CubeIcon,
+//   ScaleIcon,
+//   CurrencyDollarIcon,
+//   SparklesIcon,
+//   ShieldCheckIcon,
+//   BuildingStorefrontIcon,
+//   ChartBarIcon
+// } from '@heroicons/react/24/outline'
+// import { HeartIcon as HeartSolid, StarIcon as StarSolid } from '@heroicons/react/24/solid'
+// import { useCart } from '@/lib/hooks/useCart'
+// import { useToast } from '@/components/providers/ToastProvider'
+// import RelatedProducts from './RelatedProducts'
+
+// // Simplified interface for product data
+// interface ProductDetailsProps {
+//   product: {
+//     _id: string
+//     name: string
+//     description: string
+//     price: number
+//     oldPrice?: number
+//     retailPrice?: number
+//     wholesalePrice?: number
+//     moq: number
+//     pricingTier: string
+//     stock: number
+//     rating: number
+//     brand: string
+//     discount?: number
+//     size?: string
+//     images: Array<{ url: string; public_id: string }>
+//     banners?: Array<{ url: string; title?: string }>
+//     bannerTitle?: string
+//     category: { _id: string; name: string }
+//     subCategory?: { _id: string; name: string }
+//     thirdCategory?: { _id: string; name: string }
+//     featured: boolean
+//     wholesaleEnabled: boolean
+//     status: string
+//     sku?: string
+//     tags?: string[]
+//     specifications?: Record<string, string>
+//     weight?: number
+//     dimensions?: {
+//       length: number
+//       width: number
+//       height: number
+//     }
+//     createdAt?: string
+//     updatedAt?: string
+//   }
+// }
+
+// export default function ProductDetails({ product }: ProductDetailsProps) {
+//   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+//   const [quantity, setQuantity] = useState(product.moq || 1)
+//   const [isFavorite, setIsFavorite] = useState(false)
+//   const { addToCart } = useCart()
+//   const { showToast } = useToast()
+
+//   // Helper function to safely access properties
+//   const getSafeValue = <T,>(value: T | undefined | null, defaultValue: T): T => {
+//     return value !== undefined && value !== null ? value : defaultValue
+//   }
+
+//   // Calculate discount percentage
+//   const hasDiscount = product.oldPrice && product.oldPrice > product.price
+//   const discountPercentage = hasDiscount 
+//     ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
+//     : (product.discount || 0)
+
+//   // Get product images for gallery
+//   const productImages = getSafeValue(product.images, []).map(img => img.url)
+//   const allImages = productImages.length > 0 ? productImages : ['/images/placeholder-food.jpg']
+
+//   const handleAddToCart = () => {
+//     // Check if product is in stock
+//     if (product.stock === 0) {
+//       showToast(`${product.name} is out of stock!`)
+//       return
+//     }
+    
+//     // Check if quantity meets MOQ
+//     if (quantity < (product.moq || 1)) {
+//       showToast(`Minimum order quantity is ${product.moq || 1}`)
+//       return
+//     }
+    
+//     addToCart({
+//       id: product._id,
+//       name: product.name,
+//       price: product.price,
+//       image: allImages[0],
+//       quantity: quantity
+//     })
+    
+//     showToast(`${product.name} added to cart!`)
+//   }
+
+//   const handleBuyNow = () => {
+//     handleAddToCart()
+//   }
+
+//   const handleShare = () => {
+//     if (navigator.share) {
+//       navigator.share({
+//         title: product.name,
+//         text: product.description,
+//         url: window.location.href,
+//       })
+//     } else {
+//       navigator.clipboard.writeText(window.location.href)
+//       showToast('Link copied to clipboard!')
+//     }
+//   }
+
+//   // Check if product is vegetarian/vegan based on tags
+//   const isVegetarian = product.tags?.includes('vegetarian') || false
+//   const isVegan = product.tags?.includes('vegan') || false
+//   const isGlutenFree = product.tags?.includes('gluten-free') || false
+//   const isDairyFree = product.tags?.includes('dairy-free') || false
+
+//   return (
+//     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+//       {/* Back Button */}
+//       <button
+//         onClick={() => window.history.back()}
+//         className="flex items-center text-gray-600 hover:text-pepe-primary mb-8 transition-colors"
+//       >
+//         <ArrowLeftIcon className="w-5 h-5 mr-2" />
+//         Back to Menu
+//       </button>
+
+//       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+//         {/* Product Images */}
+//         <div className="space-y-6">
+//           {/* Main Image */}
+//           <div className="relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 shadow-lg">
+//             <img
+//               src={allImages[selectedImageIndex]}
+//               alt={product.name}
+//               className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+//               onError={(e) => {
+//                 e.currentTarget.src = '/images/placeholder-food.jpg'
+//               }}
+//             />
+            
+//             {/* Badges */}
+//             <div className="absolute top-4 left-4 flex flex-col gap-2">
+//               {product.featured && (
+//                 <div className="bg-gradient-to-r from-pepe-primary to-pink-500 text-white px-4 py-2 rounded-full font-semibold text-sm flex items-center shadow-lg">
+//                   <SparklesIcon className="w-4 h-4 mr-2" />
+//                   Popular
+//                 </div>
+//               )}
+              
+//               {product.stock === 0 ? (
+//                 <div className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-full font-semibold text-sm shadow-lg">
+//                   Out of Stock
+//                 </div>
+//               ) : (
+//                 <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full font-semibold text-sm shadow-lg">
+//                   In Stock ({product.stock})
+//                 </div>
+//               )}
+              
+//               {discountPercentage > 0 && (
+//                 <div className="bg-gradient-to-r from-orange-500 to-amber-600 text-white px-4 py-2 rounded-full font-semibold text-sm shadow-lg">
+//                   {discountPercentage}% OFF
+//                 </div>
+//               )}
+              
+//               {product.wholesaleEnabled && (
+//                 <div className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-4 py-2 rounded-full font-semibold text-sm shadow-lg flex items-center">
+//                   <BuildingStorefrontIcon className="w-4 h-4 mr-2" />
+//                   Wholesale Available
+//                 </div>
+//               )}
+//             </div>
+            
+//             {/* Favorite Button */}
+//             <button
+//               onClick={() => setIsFavorite(!isFavorite)}
+//               className="absolute top-4 right-4 p-3 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-all shadow-lg hover:scale-110"
+//               aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+//             >
+//               {isFavorite ? (
+//                 <HeartSolid className="w-6 h-6 fill-red-500 text-red-500" />
+//               ) : (
+//                 <HeartIcon className="w-6 h-6 text-gray-700" />
+//               )}
+//             </button>
+//           </div>
+
+//           {/* Thumbnail Images */}
+//           {allImages.length > 1 && (
+//             <div className="flex space-x-4 overflow-x-auto pb-4">
+//               {allImages.map((image, index) => (
+//                 <button
+//                   key={index}
+//                   onClick={() => setSelectedImageIndex(index)}
+//                   className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${
+//                     selectedImageIndex === index
+//                       ? 'border-pepe-primary ring-2 ring-pepe-primary/20 ring-offset-2 scale-105'
+//                       : 'border-gray-200 hover:border-gray-300 hover:scale-105'
+//                   }`}
+//                 >
+//                   <img
+//                     src={image}
+//                     alt={`${product.name} - view ${index + 1}`}
+//                     className="w-full h-full object-cover"
+//                     onError={(e) => {
+//                       e.currentTarget.src = '/images/placeholder-food.jpg'
+//                     }}
+//                   />
+//                 </button>
+//               ))}
+//             </div>
+//           )}
+
+//           {/* Banners if available */}
+//           {product.banners && product.banners.length > 0 && (
+//             <div className="mt-8">
+//               <h3 className="text-lg font-semibold mb-4 text-gray-900">
+//                 {product.bannerTitle || 'Special Offers'}
+//               </h3>
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//                 {product.banners.map((banner, index) => (
+//                   <div key={index} className="relative rounded-xl overflow-hidden h-32">
+//                     <img
+//                       src={banner.url}
+//                       alt={banner.title || 'Special Offer'}
+//                       className="w-full h-full object-cover"
+//                       onError={(e) => {
+//                         e.currentTarget.src = '/images/placeholder-food.jpg'
+//                       }}
+//                     />
+//                     {banner.title && (
+//                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+//                         <p className="text-white font-medium">{banner.title}</p>
+//                       </div>
+//                     )}
+//                   </div>
+//                 ))}
+//               </div>
+//             </div>
+//           )}
+//         </div>
+
+//         {/* Product Info */}
+//         <div className="space-y-8">
+//           {/* Category Hierarchy */}
+//           <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
+//             <span>{product.category?.name || 'Uncategorized'}</span>
+//             {product.subCategory && (
+//               <>
+//                 <span>/</span>
+//                 <span>{product.subCategory.name}</span>
+//               </>
+//             )}
+//             {product.thirdCategory && (
+//               <>
+//                 <span>/</span>
+//                 <span>{product.thirdCategory.name}</span>
+//               </>
+//             )}
+//           </div>
+
+//           {/* Product Name */}
+//           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+//             {product.name}
+//           </h1>
+
+//           {/* Brand & Rating & SKU */}
+//           <div className="flex flex-wrap items-center gap-6">
+//             <div className="flex items-center">
+//               <div className="flex">
+//                 {[...Array(5)].map((_, i) => (
+//                   <StarIcon
+//                     key={i}
+//                     className={`w-5 h-5 ${
+//                       i < Math.floor(product.rating || 0)
+//                         ? 'text-yellow-400 fill-yellow-400'
+//                         : 'text-gray-300'
+//                     }`}
+//                   />
+//                 ))}
+//               </div>
+//               <span className="ml-3 text-gray-700 font-semibold">
+//                 {(product.rating || 0).toFixed(1)}
+//               </span>
+//             </div>
+            
+//             <div className="flex items-center text-gray-600">
+//               <ShieldCheckIcon className="w-5 h-5 mr-2" />
+//               <span className="font-medium">{product.brand || 'Unknown Brand'}</span>
+//             </div>
+            
+//             {product.sku && (
+//               <div className="flex items-center text-gray-500 text-sm">
+//                 <TagIcon className="w-4 h-4 mr-2" />
+//                 SKU: {product.sku}
+//               </div>
+//             )}
+//           </div>
+
+//           {/* Dietary Badges */}
+//           <div className="flex flex-wrap items-center gap-3">
+//             {isVegetarian && (
+//               <span className="px-4 py-2 bg-gradient-to-r from-green-50 to-emerald-100 text-green-800 border border-green-200 rounded-full text-sm font-medium flex items-center">
+//                 <CheckCircleIcon className="w-4 h-4 mr-2" />
+//                 Vegetarian
+//               </span>
+//             )}
+//             {isVegan && (
+//               <span className="px-4 py-2 bg-gradient-to-r from-emerald-50 to-teal-100 text-emerald-800 border border-emerald-200 rounded-full text-sm font-medium flex items-center">
+//                 🌱 Vegan
+//               </span>
+//             )}
+//             {isGlutenFree && (
+//               <span className="px-4 py-2 bg-gradient-to-r from-amber-50 to-yellow-100 text-amber-800 border border-amber-200 rounded-full text-sm font-medium flex items-center">
+//                 🌾 Gluten Free
+//               </span>
+//             )}
+//             {isDairyFree && (
+//               <span className="px-4 py-2 bg-gradient-to-r from-blue-50 to-cyan-100 text-blue-800 border border-blue-200 rounded-full text-sm font-medium flex items-center">
+//                 🥛 Dairy Free
+//               </span>
+//             )}
+//             {product.tags && product.tags.map((tag: string) => (
+//               <span key={tag} className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">
+//                 {tag}
+//               </span>
+//             ))}
+//           </div>
+
+//           {/* Size */}
+//           {product.size && (
+//             <div className="flex items-center text-gray-600">
+//               <span className="font-medium mr-2">Size:</span>
+//               <span>{product.size}</span>
+//             </div>
+//           )}
+
+//           {/* Price Section */}
+//           <div className="space-y-3">
+//             <div className="flex items-center flex-wrap gap-4">
+//               <div className="text-5xl font-bold text-pepe-primary">
+//                 ₦{product.price.toLocaleString()}
+//               </div>
+              
+//               {hasDiscount && product.oldPrice && (
+//                 <>
+//                   <div className="text-2xl font-bold text-gray-400 line-through">
+//                     ₦{product.oldPrice.toLocaleString()}
+//                   </div>
+//                   <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-2 rounded-full font-bold text-lg">
+//                     Save {discountPercentage}%
+//                   </div>
+//                 </>
+//               )}
+//             </div>
+            
+//             {/* Retail & Wholesale Prices */}
+//             {(product.retailPrice || product.wholesalePrice) && (
+//               <div className="space-y-2">
+//                 {product.retailPrice && product.retailPrice !== product.price && (
+//                   <div className="text-sm text-gray-600">
+//                     <CurrencyDollarIcon className="w-4 h-4 inline mr-2" />
+//                     Retail: ₦{product.retailPrice.toLocaleString()}
+//                   </div>
+//                 )}
+                
+//                 {product.wholesaleEnabled && product.wholesalePrice && (
+//                   <div className="text-sm text-green-600 bg-green-50 px-4 py-2 rounded-lg">
+//                     <BuildingStorefrontIcon className="w-4 h-4 inline mr-2" />
+//                     Wholesale Price: ₦{product.wholesalePrice.toLocaleString()}
+//                     <span className="text-xs text-gray-500 ml-2">(Contact for bulk orders)</span>
+//                   </div>
+//                 )}
+//               </div>
+//             )}
+            
+//             {/* Pricing Tier */}
+//             {product.pricingTier && product.pricingTier !== 'Standard' && (
+//               <div className="text-sm text-gray-600 bg-gray-50 px-4 py-2 rounded-lg">
+//                 <ChartBarIcon className="w-4 h-4 inline mr-2" />
+//                 Pricing Tier: {product.pricingTier}
+//               </div>
+//             )}
+            
+//             {/* MOQ Notice */}
+//             {product.moq > 1 && (
+//               <div className="text-sm text-gray-600 bg-yellow-50 px-4 py-2 rounded-lg">
+//                 <CurrencyDollarIcon className="w-4 h-4 inline mr-2" />
+//                 Minimum order quantity: {product.moq} items
+//               </div>
+//             )}
+//           </div>
+
+//           {/* Stock Status */}
+//           <div className={`px-4 py-3 rounded-lg ${
+//             product.stock === 0 
+//               ? 'bg-red-50 text-red-800 border border-red-200' 
+//               : 'bg-green-50 text-green-800 border border-green-200'
+//           }`}>
+//             <div className="flex items-center justify-between">
+//               <span className="font-medium">
+//                 {product.stock === 0 
+//                   ? 'Out of Stock' 
+//                   : `${product.stock} units available`
+//                 }
+//               </span>
+//               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+//                 product.stock === 0 
+//                   ? 'bg-red-100 text-red-700' 
+//                   : 'bg-green-100 text-green-700'
+//               }`}>
+//                 {product.status || 'Active'}
+//               </span>
+//             </div>
+//           </div>
+
+//           {/* Description */}
+//           <div className="pt-6 border-t border-gray-200">
+//             <h3 className="text-xl font-bold text-gray-900 mb-4">Description</h3>
+//             <p className="text-gray-600 leading-relaxed text-lg whitespace-pre-line">
+//               {product.description}
+//             </p>
+//           </div>
+
+//           {/* Specifications */}
+//           {product.specifications && Object.keys(product.specifications).length > 0 && (
+//             <div className="pt-6 border-t border-gray-200">
+//               <h3 className="text-xl font-bold text-gray-900 mb-4">Specifications</h3>
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//                 {Object.entries(product.specifications).map(([key, value]) => (
+//                   <div key={key} className="flex items-center p-3 bg-gray-50 rounded-lg">
+//                     <span className="font-medium text-gray-700 capitalize">{key}:</span>
+//                     <span className="ml-2 text-gray-600">{value}</span>
+//                   </div>
+//                 ))}
+//               </div>
+//             </div>
+//           )}
+
+//           {/* Weight & Dimensions */}
+//           {(product.weight || product.dimensions) && (
+//             <div className="pt-6 border-t border-gray-200">
+//               <h3 className="text-xl font-bold text-gray-900 mb-4">Physical Details</h3>
+//               <div className="flex flex-wrap gap-6">
+//                 {product.weight && (
+//                   <div className="flex items-center px-4 py-3 bg-gray-50 rounded-xl">
+//                     <ScaleIcon className="w-5 h-5 mr-3 text-pepe-primary" />
+//                     <div>
+//                       <p className="text-sm text-gray-500">Weight</p>
+//                       <p className="font-semibold text-gray-900">{product.weight} kg</p>
+//                     </div>
+//                   </div>
+//                 )}
+                
+//                 {product.dimensions && (
+//                   <div className="flex items-center px-4 py-3 bg-gray-50 rounded-xl">
+//                     <CubeIcon className="w-5 h-5 mr-3 text-pepe-primary" />
+//                     <div>
+//                       <p className="text-sm text-gray-500">Dimensions</p>
+//                       <p className="font-semibold text-gray-900">
+//                         {product.dimensions.length} × {product.dimensions.width} × {product.dimensions.height} cm
+//                       </p>
+//                     </div>
+//                   </div>
+//                 )}
+//               </div>
+//             </div>
+//           )}
+
+//           {/* Quantity Selector */}
+//           <div className="pt-6 border-t border-gray-200">
+//             <div className="flex items-center justify-between mb-6">
+//               <h3 className="text-xl font-bold text-gray-900">Quantity</h3>
+//               {product.moq > 1 && (
+//                 <span className="text-sm text-gray-500">Min: {product.moq}</span>
+//               )}
+//             </div>
+//             <div className="flex items-center space-x-6">
+//               <div className="flex items-center border-2 border-gray-300 rounded-xl overflow-hidden">
+//                 <button
+//                   onClick={() => setQuantity(prev => Math.max(product.moq || 1, prev - 1))}
+//                   className="px-5 py-4 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+//                   disabled={quantity <= (product.moq || 1)}
+//                 >
+//                   -
+//                 </button>
+//                 <span className="px-6 py-4 text-xl font-bold min-w-[80px] text-center bg-gray-50">
+//                   {quantity}
+//                 </span>
+//                 <button
+//                   onClick={() => setQuantity(prev => prev + 1)}
+//                   className="px-5 py-4 text-gray-600 hover:bg-gray-100"
+//                 >
+//                   +
+//                 </button>
+//               </div>
+//               <div className="text-xl font-bold text-gray-900">
+//                 Total: ₦{(product.price * quantity).toLocaleString()}
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Action Buttons */}
+//           <div className="pt-6 border-t border-gray-200 space-y-6">
+//             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//               <button
+//                 onClick={handleAddToCart}
+//                 disabled={product.stock === 0}
+//                 className={`flex items-center justify-center py-4 px-6 rounded-xl font-bold text-lg transition-all ${
+//                   product.stock === 0
+//                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+//                     : 'bg-white border-2 border-pepe-primary text-pepe-primary hover:bg-pepe-primary hover:text-white hover:shadow-lg'
+//                 }`}
+//               >
+//                 <ShoppingCartIcon className="w-6 h-6 mr-3" />
+//                 {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+//               </button>
+              
+//               <button
+//                 onClick={handleBuyNow}
+//                 disabled={product.stock === 0}
+//                 className={`py-4 px-6 rounded-xl font-bold text-lg transition-all ${
+//                   product.stock === 0
+//                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+//                     : 'bg-gradient-to-r from-pepe-primary to-pink-500 text-white hover:shadow-xl hover:scale-[1.02]'
+//                 }`}
+//               >
+//                 Order Now
+//               </button>
+//             </div>
+
+//             {/* Share Button */}
+//             <button
+//               onClick={handleShare}
+//               className="flex items-center justify-center w-full py-4 text-gray-600 hover:text-pepe-primary transition-colors border border-gray-200 rounded-xl hover:border-pepe-primary/20 hover:bg-pepe-primary/5"
+//             >
+//               <ShareIcon className="w-5 h-5 mr-2" />
+//               Share this product
+//             </button>
+//           </div>
+
+//           {/* Product Meta */}
+//           <div className="pt-6 border-t border-gray-200 text-sm text-gray-500">
+//             <div className="flex flex-wrap items-center gap-4">
+//               <span>Product ID: {product._id}</span>
+//               {product.createdAt && (
+//                 <span>Added: {new Date(product.createdAt).toLocaleDateString('en-US', {
+//                   year: 'numeric',
+//                   month: 'short',
+//                   day: 'numeric'
+//                 })}</span>
+//               )}
+//               {product.updatedAt && (
+//                 <span>Updated: {new Date(product.updatedAt).toLocaleDateString('en-US', {
+//                   year: 'numeric',
+//                   month: 'short',
+//                   day: 'numeric'
+//                 })}</span>
+//               )}
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Related Products */}
+//       {product.category?._id && (
+//         <div className="mt-20 pt-12 border-t border-gray-200">
+//           <RelatedProducts 
+//             categoryId={product.category._id}
+//             currentProductId={product._id}
+//           />
+//         </div>
+//       )}
+//     </div>
+//   )
+// }
 
 
 

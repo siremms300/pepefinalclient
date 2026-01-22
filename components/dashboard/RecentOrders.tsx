@@ -72,7 +72,7 @@ export default function RecentOrders() {
         customer: { name: 'Robert Brown', email: 'robert@example.com' },
         total: 4500,
         order_status: 'cancelled',
-        payment_status: 'refunded',
+        payment_status: 'failed',
         items: 1,
         createdAt: '2024-01-13T16:10:00Z'
       }
