@@ -176,13 +176,13 @@ export default function AboutPage() {
     
     return (
       <div className="text-center">
-        <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-pepe-primary to-pepe-secondary rounded-2xl flex items-center justify-center shadow-lg">
+        <div className="w-16 h-16 mx-auto mb-4 bg-linear-to-br from-pepe-primary to-pepe-secondary rounded-2xl flex items-center justify-center shadow-lg">
           {label === 'Happy Customers' && '👥'}
           {label === 'Orders Delivered' && '📦'}
           {label === 'Customer Rating' && '⭐'}
           {label === 'Years Serving' && '⏳'}
         </div>
-        <div className="text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+        <div className="text-4xl md:text-5xl font-bold mb-2 bg-linear-to-r from-white to-gray-300 bg-clip-text text-transparent">
           {label === 'Customer Rating' ? `${count.toFixed(1)}` : count}
           <span className="text-pepe-primary">{suffix}</span>
         </div>
@@ -192,13 +192,13 @@ export default function AboutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white">
       <Header />
       
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-pepe-primary/10 to-pepe-secondary/10" />
+          <div className="absolute inset-0 bg-linear-to-r from-pepe-primary/10 to-pepe-secondary/10" />
           <div className="absolute top-0 left-0 w-72 h-72 bg-pepe-primary/5 rounded-full -translate-x-1/2 -translate-y-1/2 animate-pulse" />
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-pepe-secondary/5 rounded-full translate-x-1/3 translate-y-1/3 animate-pulse delay-1000" />
         </div>
@@ -214,7 +214,7 @@ export default function AboutPage() {
             
             <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight animate-slide-up">
               More Than Just{' '}
-              <span className="bg-gradient-to-r from-pepe-primary to-pepe-secondary bg-clip-text text-transparent animate-gradient">
+              <span className="bg-linear-to-r from-pepe-primary to-pepe-secondary bg-clip-text text-transparent animate-gradient">
                 Food
               </span>
             </h1>
@@ -227,7 +227,7 @@ export default function AboutPage() {
             <div className="flex flex-wrap justify-center gap-4 animate-slide-up delay-200">
               <Link
                 href="/menu"
-                className="px-8 py-4 bg-gradient-to-r from-pepe-primary to-pepe-secondary text-white rounded-xl font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center group"
+                className="px-8 py-4 bg-linear-to-r from-pepe-primary to-pepe-secondary text-white rounded-xl font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center group"
               >
                 Explore Our Menu
                 <span className="ml-2 group-hover:translate-x-2 transition-transform">→</span>
@@ -244,7 +244,7 @@ export default function AboutPage() {
       </section>
 
       {/* Animated Stats */}
-      <section className="py-16 bg-gradient-to-r from-gray-900 to-gray-800 text-white">
+      <section className="py-16 bg-linear-to-r from-gray-900 to-gray-800 text-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <StatCounter end={10000} suffix="+" label="Happy Customers" />
@@ -260,13 +260,15 @@ export default function AboutPage() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div 
-              ref={el => sectionRefs.current[0] = el}
+              ref={el => {
+                sectionRefs.current[0] = el;
+              }}
               className={`transition-all duration-700 transform ${visibleSections.has(0) ? 'translate-x-0 opacity-100' : '-translate-x-10 opacity-0'}`}
             >
               <div className="relative">
                 <div className="absolute -top-6 -left-6 w-24 h-24 bg-pepe-primary/10 rounded-3xl" />
                 <div className="relative z-10 bg-white rounded-3xl shadow-2xl overflow-hidden">
-                  <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                  <div className="aspect-square bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                     <div className="text-8xl animate-float">🍝</div>
                   </div>
                 </div>
@@ -275,12 +277,14 @@ export default function AboutPage() {
             </div>
             
             <div 
-              ref={el => sectionRefs.current[1] = el}
+              ref={el => {
+                sectionRefs.current[1] = el;
+              }}
               className={`transition-all duration-700 transform delay-300 ${visibleSections.has(1) ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'}`}
             >
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
                 From Humble{' '}
-                <span className="bg-gradient-to-r from-pepe-primary to-pepe-secondary bg-clip-text text-transparent">
+                <span className="bg-linear-to-r from-pepe-primary to-pepe-secondary bg-clip-text text-transparent">
                   Beginnings
                 </span>
               </h2>
@@ -311,11 +315,11 @@ export default function AboutPage() {
       </section>
 
       {/* Our Values */}
-      <section className="py-20 bg-gradient-to-b from-white to-gray-50">
+      <section className="py-20 bg-linear-to-b from-white to-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Our <span className="bg-gradient-to-r from-pepe-primary to-pepe-secondary bg-clip-text text-transparent">Core Values</span>
+              Our <span className="bg-linear-to-r from-pepe-primary to-pepe-secondary bg-clip-text text-transparent">Core Values</span>
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               These principles guide everything we do, from selecting ingredients to serving our customers.
@@ -326,12 +330,14 @@ export default function AboutPage() {
             {values.map((value, index) => (
               <div 
                 key={value.title}
-                ref={el => sectionRefs.current[2 + index] = el}
+                ref={el => {
+                  sectionRefs.current[2 + index] = el;
+                }}
                 className={`transition-all duration-700 transform hover:-translate-y-2 ${visibleSections.has(2 + index) ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
                 <div className="bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 h-full border border-gray-100">
-                  <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${value.color} flex items-center justify-center mb-6 transition-transform duration-300 group-hover:scale-110`}>
+                  <div className={`w-20 h-20 rounded-2xl bg-linear-to-br ${value.color} flex items-center justify-center mb-6 transition-transform duration-300 group-hover:scale-110`}>
                     {value.title === 'Passion' && '❤️'}
                     {value.title === 'Excellence' && '⭐'}
                     {value.title === 'Innovation' && '💡'}
@@ -350,7 +356,7 @@ export default function AboutPage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Our <span className="bg-gradient-to-r from-pepe-primary to-pepe-secondary bg-clip-text text-transparent">Journey</span>
+              Our <span className="bg-linear-to-r from-pepe-primary to-pepe-secondary bg-clip-text text-transparent">Journey</span>
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               Milestones that mark our growth and commitment to excellence
@@ -358,7 +364,7 @@ export default function AboutPage() {
           </div>
           
           <div className="relative">
-            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-pepe-primary to-pepe-secondary" />
+            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-linear-to-b from-pepe-primary to-pepe-secondary" />
             
             <div className="space-y-12">
               {timeline.map((item, index) => {
@@ -367,7 +373,9 @@ export default function AboutPage() {
                 return (
                   <div 
                     key={item.year}
-                    ref={el => sectionRefs.current[5 + index] = el}
+                    ref={el => {
+                      sectionRefs.current[5 + index] = el;
+                    }}
                     className={`relative flex items-center ${isLeft ? 'justify-start' : 'justify-end'} transition-all duration-700 ${visibleSections.has(5 + index) ? 'translate-x-0 opacity-100' : isLeft ? '-translate-x-10 opacity-0' : 'translate-x-10 opacity-0'}`}
                     style={{ transitionDelay: `${index * 100}ms` }}
                   >
@@ -396,11 +404,11 @@ export default function AboutPage() {
       </section>
 
       {/* Meet Our Team */}
-      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      <section className="py-20 bg-linear-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Meet Our <span className="bg-gradient-to-r from-pepe-primary to-pepe-secondary bg-clip-text text-transparent">Family</span>
+              Meet Our <span className="bg-linear-to-r from-pepe-primary to-pepe-secondary bg-clip-text text-transparent">Family</span>
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               The talented individuals who make every visit special
@@ -411,19 +419,21 @@ export default function AboutPage() {
             {teamMembers.map((member, index) => (
               <div 
                 key={member.name}
-                ref={el => sectionRefs.current[10 + index] = el}
+                ref={el => {
+                  sectionRefs.current[10 + index] = el;
+                }}
                 className={`transition-all duration-700 transform hover:-translate-y-2 ${visibleSections.has(10 + index) ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
                 <div className="bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 h-full group">
-                  <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden flex items-center justify-center">
+                  <div className="aspect-square bg-linear-to-br from-gray-100 to-gray-200 relative overflow-hidden flex items-center justify-center">
                     <div className="text-8xl transition-transform duration-300 group-hover:scale-110">
                       {index === 0 && '👨‍🍳'}
                       {index === 1 && '👩‍🍳'}
                       {index === 2 && '👨‍💼'}
                       {index === 3 && '👩‍💼'}
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     <div className="absolute bottom-4 left-4 right-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                       <h3 className="text-2xl font-bold text-white">{member.name}</h3>
                       <p className="text-pepe-light">{member.role}</p>
@@ -454,7 +464,7 @@ export default function AboutPage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              What Our <span className="bg-gradient-to-r from-pepe-primary to-pepe-secondary bg-clip-text text-transparent">Customers Say</span>
+              What Our <span className="bg-linear-to-r from-pepe-primary to-pepe-secondary bg-clip-text text-transparent">Customers Say</span>
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               Don&apos;t just take our word for it - hear from our community
@@ -465,7 +475,9 @@ export default function AboutPage() {
             {testimonials.map((testimonial, index) => (
               <div 
                 key={testimonial.name}
-                ref={el => sectionRefs.current[14 + index] = el}
+                ref={el => {
+                  sectionRefs.current[14 + index] = el;
+                }}
                 className={`transition-all duration-700 transform hover:-translate-y-1 ${visibleSections.has(14 + index) ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
@@ -481,7 +493,7 @@ export default function AboutPage() {
                   </p>
                   
                   <div className="flex items-center">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pepe-primary to-pepe-secondary mr-4 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-linear-to-br from-pepe-primary to-pepe-secondary mr-4 flex items-center justify-center">
                       <span className="text-white font-bold">{testimonial.name.charAt(0)}</span>
                     </div>
                     <div>
@@ -497,11 +509,11 @@ export default function AboutPage() {
       </section>
 
       {/* Visit Us CTA */}
-      <section className="py-20 bg-gradient-to-r from-gray-900 to-gray-800 text-white">
+      <section className="py-20 bg-linear-to-r from-gray-900 to-gray-800 text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Ready to <span className="bg-gradient-to-r from-pepe-primary to-pepe-secondary bg-clip-text text-transparent">Experience</span> It Yourself?
+              Ready to <span className="bg-linear-to-r from-pepe-primary to-pepe-secondary bg-clip-text text-transparent">Experience</span> It Yourself?
             </h2>
             
             <p className="text-gray-300 text-lg mb-10 max-w-2xl mx-auto">
@@ -528,7 +540,7 @@ export default function AboutPage() {
             <div className="flex flex-wrap justify-center gap-4">
               <Link
                 href="/menu"
-                className="px-8 py-4 bg-gradient-to-r from-pepe-primary to-pepe-secondary text-white rounded-xl font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 group"
+                className="px-8 py-4 bg-linear-to-r from-pepe-primary to-pepe-secondary text-white rounded-xl font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 group"
               >
                 Order Online Now
                 <span className="ml-2 group-hover:translate-x-2 transition-transform inline-block">→</span>
