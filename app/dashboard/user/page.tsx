@@ -9,7 +9,8 @@ import {
   CheckCircleIcon, 
   XCircleIcon,
   MapPinIcon,
-  CreditCardIcon
+  CreditCardIcon,
+  TruckIcon
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 
@@ -101,7 +102,7 @@ export default function UserDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-pepe-primary to-pink-500 rounded-2xl shadow-lg p-6 text-white">
+      <div className="bg-linear-to-r from-pepe-primary to-pink-500 rounded-2xl shadow-lg p-6 text-white">
         <h1 className="text-2xl font-bold mb-2">Welcome back, {user?.name}!</h1>
         <p className="text-white/90">Here's your order summary and quick actions</p>
       </div>
@@ -236,7 +237,7 @@ export default function UserDashboard() {
       </div>
 
       {/* Special Offers */}
-      <div className="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl shadow-lg p-6 text-white">
+      <div className="bg-linear-to-r from-blue-500 to-cyan-500 rounded-2xl shadow-lg p-6 text-white">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-xl font-bold mb-2">Special Offer! 🎁</h3>
@@ -250,3 +251,5 @@ export default function UserDashboard() {
     </div>
   )
 }
+
+
