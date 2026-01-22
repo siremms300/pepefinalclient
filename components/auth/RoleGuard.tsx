@@ -31,9 +31,17 @@ export default function RoleGuard({
     }
   }, [user, isLoading, router, allowedRoles, redirectTo])
 
-  if (isLoading) {
-    return <LoadingSpinner fullScreen />
-  }
+  // if (isLoading) {
+  //   return <LoadingSpinner fullScreen />
+  // }
+
+   if (isLoading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          <LoadingSpinner size="large" />
+        </div>
+      )
+    }
 
   if (!user || !allowedRoles.includes(user.role)) {
     return null
